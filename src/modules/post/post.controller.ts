@@ -1,10 +1,15 @@
 import { Request, Response } from "express";
 import PostServices from "./post.service";
-import { Post } from "../../../generated/prisma/client";
 
 const createPost = async (req: Request, res: Response) => {
   try {
-    const result = await PostServices.createPost(req.body);
+    if (!req.user) {
+      return res.status(400).json({
+        success: false,
+        message: "Failed to create post, Please login",
+      });
+    }
+    const result = await PostServices.createPost(req.body, req.user.id);
     res.status(201).json({
       success: true,
       message: "Post created successfully",

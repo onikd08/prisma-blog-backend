@@ -58,15 +58,19 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url, token }, request) => {
-      const info = await transporter.sendMail({
-        from: '"Prisma Blog App" <prisma.blog.app@pbamail.com>',
-        to: user.email,
-        subject: "Verification required",
-        text: "Please verify your email", // Plain-text version of the message
-        html: emailVerificationHtml(user, url), // HTML version of the message
-      });
+      try {
+        const info = await transporter.sendMail({
+          from: '"Prisma Blog App" <prisma.blog.app@pbamail.com>',
+          to: user.email,
+          subject: "Verification required",
+          text: "Please verify your email", // Plain-text version of the message
+          html: emailVerificationHtml(user, url), // HTML version of the message
+        });
 
-      console.log("Message sent:", info.messageId);
+        console.log("Message sent:", info.messageId);
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 });
