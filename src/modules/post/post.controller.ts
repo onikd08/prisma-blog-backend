@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import PostServices from "./post.service";
+import { success } from "better-auth/*";
 
 const createPost = async (req: Request, res: Response) => {
   try {
@@ -24,8 +25,26 @@ const createPost = async (req: Request, res: Response) => {
   }
 };
 
+const getAllPosts = async (req: Request, res: Response) => {
+  try {
+    const result = await PostServices.getAllPosts();
+    res.status(200).json({
+      success: true,
+      message: "All posts have been fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Failed to fetch posts",
+      error: error,
+    });
+  }
+};
+
 const PostController = {
   createPost,
+  getAllPosts,
 };
 
 export default PostController;
