@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import PostServices from "./post.service";
+import PostServices, { ISearchPayload } from "./post.service";
 import { success } from "better-auth/*";
 
 const createPost = async (req: Request, res: Response) => {
@@ -27,11 +27,13 @@ const createPost = async (req: Request, res: Response) => {
 
 const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const { search } = req.query;
+    const { search, tags } = req.query;
     const payload = {
       searchString: typeof search === "string" ? search : undefined,
+      searchTags: typeof tags === "string" ? tags.split(",") : undefined,
     };
-    const result = await PostServices.getAllPosts(payload);
+
+    const result = await PostServices.getAllPosts(payload as ISearchPayload);
     res.status(200).json({
       success: true,
       message: "All posts have been fetched successfully",
