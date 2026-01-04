@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import PostServices, { ISearchPayload } from "./post.service";
 import { success } from "better-auth/*";
+import { PostStatus } from "../../../generated/prisma/enums";
+import { auth } from "../../lib/auth";
 
 const createPost = async (req: Request, res: Response) => {
   try {
@@ -27,12 +29,14 @@ const createPost = async (req: Request, res: Response) => {
 
 const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const { search, tags, isFeatured } = req.query;
+    const { search, tags, isFeatured, status, authorId } = req.query;
     const payload = {
       searchString: typeof search === "string" ? search : undefined,
       searchTags: typeof tags === "string" ? tags.split(",") : undefined,
       searchByIsFeatured:
         typeof isFeatured === "string" ? isFeatured : undefined,
+      searchByStatus: (status as PostStatus) || undefined,
+      searchByAuthorId: typeof authorId === "string" ? authorId : undefined,
     };
 
     const result = await PostServices.getAllPosts(payload as ISearchPayload);

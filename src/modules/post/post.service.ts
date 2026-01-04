@@ -1,4 +1,4 @@
-import { Post } from "../../../generated/prisma/client";
+import { Post, PostStatus } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 
@@ -6,6 +6,8 @@ export interface ISearchPayload {
   searchString?: string;
   searchTags?: string[];
   searchByIsFeatured?: string;
+  searchByStatus?: PostStatus;
+  searchByAuthorId?: string;
 }
 
 const createPost = async (
@@ -67,6 +69,18 @@ const getAllPosts = async (payload: ISearchPayload) => {
   if (payload.searchByIsFeatured && payload.searchByIsFeatured === "false") {
     andConditions.push({
       isFeatured: false,
+    });
+  }
+
+  if (payload.searchByStatus) {
+    andConditions.push({
+      status: payload.searchByStatus,
+    });
+  }
+
+  if (payload.searchByAuthorId) {
+    andConditions.push({
+      authorId: payload.searchByAuthorId,
     });
   }
 
