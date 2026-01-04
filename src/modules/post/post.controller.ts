@@ -27,10 +27,12 @@ const createPost = async (req: Request, res: Response) => {
 
 const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const { search, tags } = req.query;
+    const { search, tags, isFeatured } = req.query;
     const payload = {
       searchString: typeof search === "string" ? search : undefined,
       searchTags: typeof tags === "string" ? tags.split(",") : undefined,
+      searchByIsFeatured:
+        typeof isFeatured === "string" ? isFeatured : undefined,
     };
 
     const result = await PostServices.getAllPosts(payload as ISearchPayload);

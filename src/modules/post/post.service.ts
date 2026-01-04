@@ -3,8 +3,9 @@ import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 
 export interface ISearchPayload {
-  searchString?: string | undefined;
-  searchTags?: string[] | [];
+  searchString?: string;
+  searchTags?: string[];
+  searchByIsFeatured?: string;
 }
 
 const createPost = async (
@@ -54,6 +55,18 @@ const getAllPosts = async (payload: ISearchPayload) => {
       tags: {
         hasEvery: payload.searchTags,
       },
+    });
+  }
+
+  if (payload.searchByIsFeatured && payload.searchByIsFeatured === "true") {
+    andConditions.push({
+      isFeatured: true,
+    });
+  }
+
+  if (payload.searchByIsFeatured && payload.searchByIsFeatured === "false") {
+    andConditions.push({
+      isFeatured: false,
     });
   }
 
