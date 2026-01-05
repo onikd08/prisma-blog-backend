@@ -27,8 +27,17 @@ const createPost = async (req: Request, res: Response) => {
 
 const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const { search, tags, isFeatured, status, authorId, limit, page } =
-      req.query;
+    const {
+      search,
+      tags,
+      isFeatured,
+      status,
+      authorId,
+      limit,
+      page,
+      sortBy,
+      sortOrder,
+    } = req.query;
     const payload = {
       searchString: typeof search === "string" ? search : undefined,
       searchTags: typeof tags === "string" ? tags.split(",") : undefined,
@@ -38,6 +47,8 @@ const getAllPosts = async (req: Request, res: Response) => {
       searchByAuthorId: typeof authorId === "string" ? authorId : undefined,
       page: Number(page ?? 1),
       limit: Number(limit ?? 10),
+      sortBy: typeof sortBy === "string" ? sortBy : undefined,
+      sortOrder: typeof sortOrder === "string" ? sortOrder : undefined,
     };
 
     const result = await PostServices.getAllPosts(payload as IFilterPayload);

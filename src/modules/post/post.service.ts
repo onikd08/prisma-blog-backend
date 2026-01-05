@@ -10,6 +10,8 @@ export interface IFilterPayload {
   searchByAuthorId?: string;
   limit: number;
   page: number;
+  sortBy?: string;
+  sortOrder?: string;
 }
 
 const createPost = async (
@@ -99,6 +101,14 @@ const getAllPosts = async (payload: IFilterPayload) => {
     where: {
       AND: andConditions,
     },
+    orderBy:
+      payload.sortBy && payload.sortOrder
+        ? {
+            [payload.sortBy]: payload.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
   });
   return result;
 };
