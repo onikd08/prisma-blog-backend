@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import PostServices, { ISearchPayload } from "./post.service";
-import { success } from "better-auth/*";
+import PostServices, { IFilterPayload } from "./post.service";
 import { PostStatus } from "../../../generated/prisma/enums";
-import { auth } from "../../lib/auth";
 
 const createPost = async (req: Request, res: Response) => {
   try {
@@ -29,7 +27,8 @@ const createPost = async (req: Request, res: Response) => {
 
 const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const { search, tags, isFeatured, status, authorId } = req.query;
+    const { search, tags, isFeatured, status, authorId, limit, page } =
+      req.query;
     const payload = {
       searchString: typeof search === "string" ? search : undefined,
       searchTags: typeof tags === "string" ? tags.split(",") : undefined,
@@ -37,9 +36,11 @@ const getAllPosts = async (req: Request, res: Response) => {
         typeof isFeatured === "string" ? isFeatured : undefined,
       searchByStatus: (status as PostStatus) || undefined,
       searchByAuthorId: typeof authorId === "string" ? authorId : undefined,
+      page: Number(page ?? 1),
+      limit: Number(limit ?? 10),
     };
 
-    const result = await PostServices.getAllPosts(payload as ISearchPayload);
+    const result = await PostServices.getAllPosts(payload as IFilterPayload);
     res.status(200).json({
       success: true,
       message: "All posts have been fetched successfully",

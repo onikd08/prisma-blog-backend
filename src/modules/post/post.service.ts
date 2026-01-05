@@ -2,12 +2,14 @@ import { Post, PostStatus } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 
-export interface ISearchPayload {
+export interface IFilterPayload {
   searchString?: string;
   searchTags?: string[];
   searchByIsFeatured?: string;
   searchByStatus?: PostStatus;
   searchByAuthorId?: string;
+  limit: number;
+  page: number;
 }
 
 const createPost = async (
@@ -23,7 +25,7 @@ const createPost = async (
   return result;
 };
 
-const getAllPosts = async (payload: ISearchPayload) => {
+const getAllPosts = async (payload: IFilterPayload) => {
   const andConditions: PostWhereInput[] = [];
 
   if (payload.searchString) {
@@ -84,7 +86,16 @@ const getAllPosts = async (payload: ISearchPayload) => {
     });
   }
 
+  const skip = (payload.page - 1) * payload.limit;
+  console.log({
+    page: payload.page,
+    limit: payload.limit,
+    skip,
+  });
+
   const result = await prisma.post.findMany({
+    take: payload.limit,
+    skip,
     where: {
       AND: andConditions,
     },
