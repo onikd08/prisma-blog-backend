@@ -89,11 +89,6 @@ const getAllPosts = async (payload: IFilterPayload) => {
   }
 
   const skip = (payload.page - 1) * payload.limit;
-  console.log({
-    page: payload.page,
-    limit: payload.limit,
-    skip,
-  });
 
   const result = await prisma.post.findMany({
     take: payload.limit,

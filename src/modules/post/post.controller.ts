@@ -38,6 +38,7 @@ const getAllPosts = async (req: Request, res: Response) => {
       sortBy,
       sortOrder,
     } = req.query;
+    const limitNumber = Number(limit ?? 10);
     const payload = {
       searchString: typeof search === "string" ? search : undefined,
       searchTags: typeof tags === "string" ? tags.split(",") : undefined,
@@ -46,7 +47,7 @@ const getAllPosts = async (req: Request, res: Response) => {
       searchByStatus: (status as PostStatus) || undefined,
       searchByAuthorId: typeof authorId === "string" ? authorId : undefined,
       page: Number(page ?? 1),
-      limit: Number(limit ?? 10),
+      limit: limitNumber,
       sortBy: typeof sortBy === "string" ? sortBy : undefined,
       sortOrder: typeof sortOrder === "string" ? sortOrder : undefined,
     };
@@ -55,7 +56,12 @@ const getAllPosts = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "All posts have been fetched successfully",
-      count: result.length,
+      pagination: {
+        total: result.length,
+        page,
+        limit: limitNumber,
+        totalPages: Math.ceil(result.length / limitNumber),
+      },
       data: result,
     });
   } catch (error) {
