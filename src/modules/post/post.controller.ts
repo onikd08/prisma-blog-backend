@@ -39,6 +39,7 @@ const getAllPosts = async (req: Request, res: Response) => {
       sortOrder,
     } = req.query;
     const limitNumber = Number(limit ?? 10);
+    const pageNumber = Number(page ?? 1);
     const payload = {
       searchString: typeof search === "string" ? search : undefined,
       searchTags: typeof tags === "string" ? tags.split(",") : undefined,
@@ -46,21 +47,23 @@ const getAllPosts = async (req: Request, res: Response) => {
         typeof isFeatured === "string" ? isFeatured : undefined,
       searchByStatus: (status as PostStatus) || undefined,
       searchByAuthorId: typeof authorId === "string" ? authorId : undefined,
-      page: Number(page ?? 1),
+      page: pageNumber,
       limit: limitNumber,
       sortBy: typeof sortBy === "string" ? sortBy : undefined,
       sortOrder: typeof sortOrder === "string" ? sortOrder : undefined,
     };
 
-    const result = await PostServices.getAllPosts(payload as IFilterPayload);
+    const { result, total } = await PostServices.getAllPosts(
+      payload as IFilterPayload
+    );
     res.status(200).json({
       success: true,
       message: "All posts have been fetched successfully",
       pagination: {
-        total: result.length,
-        page,
+        totalPosts: total,
+        page: pageNumber,
         limit: limitNumber,
-        totalPages: Math.ceil(result.length / limitNumber),
+        totalPages: Math.ceil(total / limitNumber),
       },
       data: result,
     });
