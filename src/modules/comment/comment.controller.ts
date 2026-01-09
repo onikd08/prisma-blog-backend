@@ -115,6 +115,30 @@ const updateComment = async (req: Request, res: Response) => {
     });
   }
 };
+const moderateComment = async (req: Request, res: Response) => {
+  try {
+    const { commentId } = req.params;
+    const result = await CommentServices.moderateComment(
+      commentId as string,
+      req.body
+    );
+    res.status(201).json({
+      success: true,
+      message: "Comment updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Failed to update comment status";
+    res.status(400).json({
+      success: false,
+      message: errorMessage,
+      error: error,
+    });
+  }
+};
 
 const CommentController = {
   createComment,
@@ -123,6 +147,7 @@ const CommentController = {
   getAllComments,
   deleteCommentById,
   updateComment,
+  moderateComment,
 };
 
 export default CommentController;

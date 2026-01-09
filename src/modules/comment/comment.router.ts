@@ -25,5 +25,10 @@ commentRouter.patch(
   auth(UserRoles.ADMIN, UserRoles.USER),
   CommentController.updateComment
 );
+commentRouter.patch(
+  "/:commentId/moderate",
+  auth(UserRoles.ADMIN),
+  CommentController.moderateComment
+);
 
 export default commentRouter;

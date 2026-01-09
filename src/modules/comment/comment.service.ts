@@ -115,6 +115,31 @@ const updateComment = async (
   });
 };
 
+const moderateComment = async (
+  commentId: string,
+  data: { status: CommentStatus }
+) => {
+  const commentData = await prisma.comment.findUniqueOrThrow({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (commentData.status === data.status) {
+    throw new Error(`Status is already - ${data.status}`);
+  }
+  return await prisma.comment.update({
+    where: {
+      id: commentId,
+    },
+    data,
+    select: {
+      id: true,
+      status: true,
+    },
+  });
+};
+
 const CommentServices = {
   createComment,
   getCommentById,
@@ -122,6 +147,7 @@ const CommentServices = {
   getAllComments,
   deleteCommentById,
   updateComment,
+  moderateComment,
 };
 
 export default CommentServices;
