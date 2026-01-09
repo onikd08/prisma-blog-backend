@@ -9,5 +9,10 @@ commentRouter.post(
   auth(UserRoles.ADMIN, UserRoles.USER),
   CommentController.createComment
 );
+commentRouter.post(
+  "/:id",
+
+  CommentController.getCommentById
+);
 
 export default commentRouter;
