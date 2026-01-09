@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import CommentServices from "./comment.service";
+import { success } from "better-auth/*";
 
 const createComment = async (req: Request, res: Response) => {
   try {
@@ -22,7 +23,7 @@ const getCommentById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const result = await CommentServices.getCommentById(id as string);
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Comment fetched successfully",
       data: result,
@@ -35,10 +36,48 @@ const getCommentById = async (req: Request, res: Response) => {
     });
   }
 };
+const getCommentsByAuthorId = async (req: Request, res: Response) => {
+  try {
+    const { authorId } = req.params;
+    const result = await CommentServices.getCommentsByAuthorId(
+      authorId as string
+    );
+    res.status(200).json({
+      success: true,
+      message: "Comments fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Failed to get comments",
+      error: error,
+    });
+  }
+};
+
+const getAllComments = async (req: Request, res: Response) => {
+  try {
+    const result = await CommentServices.getAllComments();
+    res.status(200).json({
+      success: true,
+      message: "Comments fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Failed to get comments",
+      error: error,
+    });
+  }
+};
 
 const CommentController = {
   createComment,
   getCommentById,
+  getCommentsByAuthorId,
+  getAllComments,
 };
 
 export default CommentController;
