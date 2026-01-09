@@ -59,7 +59,11 @@ const getCommentsByAuthorId = async (authorId: string) => {
   });
 };
 const getAllComments = async () => {
-  return await prisma.comment.findMany();
+  return await prisma.comment.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 };
 
 const deleteCommentById = async (commentId: string, authorId: string) => {

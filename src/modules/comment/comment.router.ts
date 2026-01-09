@@ -14,6 +14,10 @@ commentRouter.get("/:id", CommentController.getCommentById);
 commentRouter.get("/author/:authorId", CommentController.getCommentsByAuthorId);
 commentRouter.get("/", CommentController.getAllComments);
 
-commentRouter.delete("/:id", CommentController.deleteCommentById);
+commentRouter.delete(
+  "/:id",
+  auth(UserRoles.ADMIN, UserRoles.USER),
+  CommentController.deleteCommentById
+);
 
 export default commentRouter;
