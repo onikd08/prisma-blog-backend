@@ -94,10 +94,34 @@ const getPostById = async (req: Request, res: Response) => {
   }
 };
 
+const getMyPosts = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      throw new Error("Unauthorized");
+    }
+    const data = await PostServices.getMyPosts(req.user.id as string);
+    res.status(200).json({
+      success: true,
+      message: "Posts retrived successfully",
+      count: data.length,
+      data,
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to retrive posts";
+    res.status(400).json({
+      success: false,
+      message: errorMessage,
+      error: error,
+    });
+  }
+};
+
 const PostController = {
   createPost,
   getAllPosts,
   getPostById,
+  getMyPosts,
 };
 
 export default PostController;

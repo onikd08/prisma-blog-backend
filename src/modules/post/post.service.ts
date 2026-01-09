@@ -121,6 +121,14 @@ const getAllPosts = async (payload: IFilterPayload) => {
 };
 
 const getPostById = async (postId: string) => {
+  const postData = await prisma.post.findUnique({
+    where: {
+      id: postId,
+    },
+  });
+  if (!postData) {
+    throw new Error("Post not found");
+  }
   return prisma.$transaction(async (tx) => {
     // Update view count
     await tx.post.update({
@@ -178,10 +186,19 @@ const getPostById = async (postId: string) => {
   });
 };
 
+const getMyPosts = async (authorId: string) => {
+  return await prisma.post.findMany({
+    where: {
+      authorId,
+    },
+  });
+};
+
 const PostServices = {
   createPost,
   getAllPosts,
   getPostById,
+  getMyPosts,
 };
 
 export default PostServices;
