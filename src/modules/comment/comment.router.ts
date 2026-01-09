@@ -20,4 +20,10 @@ commentRouter.delete(
   CommentController.deleteCommentById
 );
 
+commentRouter.patch(
+  "/:commentId",
+  auth(UserRoles.ADMIN, UserRoles.USER),
+  CommentController.updateComment
+);
+
 export default commentRouter;

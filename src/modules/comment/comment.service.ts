@@ -1,3 +1,4 @@
+import { CommentStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 interface IComment {
   postId: string;
@@ -93,12 +94,34 @@ const deleteCommentById = async (commentId: string, authorId: string) => {
   });
 };
 
+const updateComment = async (
+  commentId: string,
+  authorId: string,
+  data: { content?: string; status?: CommentStatus }
+) => {
+  await prisma.comment.findUniqueOrThrow({
+    where: {
+      id: commentId,
+      authorId,
+    },
+  });
+
+  return await prisma.comment.update({
+    where: {
+      id: commentId,
+      authorId,
+    },
+    data,
+  });
+};
+
 const CommentServices = {
   createComment,
   getCommentById,
   getCommentsByAuthorId,
   getAllComments,
   deleteCommentById,
+  updateComment,
 };
 
 export default CommentServices;
