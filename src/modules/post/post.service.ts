@@ -5,6 +5,7 @@ import {
 } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { UserRoles } from "../../middlewares/auth";
 
 export interface IFilterPayload {
   searchString?: string;
@@ -214,11 +215,46 @@ const getMyPosts = async (authorId: string) => {
   });
 };
 
+const updatePost = async (
+  postId: string,
+  data: Partial<Post>,
+  authorId: string,
+  isAdmin: boolean
+) => {
+  const postData = await prisma.post.findUnique({
+    where: {
+      authorId,
+      id: postId,
+    },
+    select: {
+      id: true,
+      authorId: true,
+    },
+  });
+
+  if (!isAdmin && !postData) {
+    throw new Error("Unauthorized! You are not owner of this post");
+  }
+
+  if (!isAdmin) {
+    delete data.isFeatured;
+  }
+  const result = await prisma.post.update({
+    where: {
+      id: postId,
+      authorId,
+    },
+    data,
+  });
+
+  return result;
+};
 const PostServices = {
   createPost,
   getAllPosts,
   getPostById,
   getMyPosts,
+  updatePost,
 };
 
 export default PostServices;

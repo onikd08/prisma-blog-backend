@@ -18,4 +18,10 @@ postRouter.post(
   PostController.createPost
 );
 
+postRouter.patch(
+  "/:id",
+  auth(UserRoles.ADMIN, UserRoles.USER),
+  PostController.updatePost
+);
+
 export default postRouter;
