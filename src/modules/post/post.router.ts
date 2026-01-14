@@ -24,4 +24,10 @@ postRouter.patch(
   PostController.updatePost
 );
 
+postRouter.delete(
+  "/:id",
+  auth(UserRoles.ADMIN, UserRoles.USER),
+  PostController.deletePost
+);
+
 export default postRouter;

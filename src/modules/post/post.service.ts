@@ -242,12 +242,45 @@ const updatePost = async (
   const result = await prisma.post.update({
     where: {
       id: postId,
-      authorId,
     },
     data,
   });
 
   return result;
+};
+
+const deletePost = async (
+  postId: string,
+  authorId: string,
+  isAdmin: boolean
+) => {
+  const postData = await prisma.post.findUnique({
+    where: {
+      id: postId,
+      authorId,
+    },
+    select: {
+      id: true,
+      authorId: true,
+    },
+  });
+
+  if (!isAdmin && !postData) {
+    throw new Error("Unauthorized! You are not owner of this post");
+  }
+
+  return await prisma.post.delete({
+    where: {
+      id: postId,
+    },
+  });
+
+  // return await prisma.post.delete({
+  //   where: {
+  //     id: postId,
+  //     authorId,
+  //   },
+  // });
 };
 const PostServices = {
   createPost,
@@ -255,6 +288,7 @@ const PostServices = {
   getPostById,
   getMyPosts,
   updatePost,
+  deletePost,
 };
 
 export default PostServices;
