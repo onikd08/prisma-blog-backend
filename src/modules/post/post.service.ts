@@ -274,13 +274,71 @@ const deletePost = async (
       id: postId,
     },
   });
+};
 
-  // return await prisma.post.delete({
-  //   where: {
-  //     id: postId,
-  //     authorId,
-  //   },
-  // });
+const getStats = async () => {
+  return await prisma.$transaction(async (tx) => {
+    const [
+      totalPosts,
+      publishedPosts,
+      draftPosts,
+      archivedPosts,
+      totalComments,
+      approvedComments,
+      totalUsers,
+      totalAdmin,
+      totalViews,
+    ] = await Promise.all([
+      tx.post.count(),
+      tx.post.count({
+        where: {
+          status: PostStatus.PUBLISHED,
+        },
+      }),
+      tx.post.count({
+        where: {
+          status: PostStatus.DRAFT,
+        },
+      }),
+      tx.post.count({
+        where: {
+          status: PostStatus.ARCHIVED,
+        },
+      }),
+      tx.comment.count({}),
+      tx.comment.count({
+        where: {
+          status: CommentStatus.APPROVED,
+        },
+      }),
+      tx.user.count({
+        where: {
+          role: UserRoles.USER,
+        },
+      }),
+      tx.user.count({
+        where: {
+          role: UserRoles.ADMIN,
+        },
+      }),
+      tx.post.aggregate({
+        _sum: {
+          views: true,
+        },
+      }),
+    ]);
+    return {
+      totalPosts,
+      publishedPosts,
+      draftPosts,
+      archivedPosts,
+      totalComments,
+      approvedComments,
+      totalAdmin,
+      totalUsers,
+      totalViews: totalViews._sum.views,
+    };
+  });
 };
 const PostServices = {
   createPost,
@@ -289,6 +347,7 @@ const PostServices = {
   getMyPosts,
   updatePost,
   deletePost,
+  getStats,
 };
 
 export default PostServices;

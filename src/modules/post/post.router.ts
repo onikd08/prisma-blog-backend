@@ -4,6 +4,8 @@ import auth, { UserRoles } from "../../middlewares/auth";
 
 const postRouter = Router();
 
+postRouter.get("/stats", auth(UserRoles.ADMIN), PostController.getStats);
+
 postRouter.get("/", PostController.getAllPosts);
 postRouter.get(
   "/my-posts",
